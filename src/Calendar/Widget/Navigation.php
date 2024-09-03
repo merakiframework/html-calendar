@@ -28,16 +28,11 @@ final class Navigation extends Widget
 
 	public function build(Calendar $calendar): self
 	{
-		$buttonGroup = new Element('div');
-
-		$buttonGroup->attributes->set(new Attribute\Class_('button-group'));
-		$buttonGroup->appendContent(
+		$this->appendContent(
 			$this->createPreviousButton($calendar),
 			$this->createCurrentButton($calendar),
 			$this->createNextButton($calendar),
 		);
-
-		$this->appendContent($buttonGroup);
 
 		return $this;
 	}

@@ -139,7 +139,7 @@ echo <<<HTML
   border-bottom: 1px solid gray;
 }
 
-.calendar .button-group {
+.calendar .navigation {
 	display: flex;
 	justify-content: center;
 	gap: 1rem;
