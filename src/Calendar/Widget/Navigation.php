@@ -84,7 +84,7 @@ final class Navigation extends Widget
 		$nextPeriod = $calendar->getDateRangeThatIncludes($calendar->selectedDate->plusPeriod($calendar->period));
 
 		$attrs = new Attribute\Set();
-		$attrs->set(new Attribute\Class_('next', 'button'));
+		$attrs->set(new Attribute\Class_('next'));
 		$attrs->set(new Attribute\Href((string)$calendar->url->withDate($calendar->selectedDate->plusPeriod($calendar->period))));
 		$attrs->set(new Attribute\Title($calendar->prettifyDate($nextPeriod->getStart(), 'j F Y') . ' - ' . $calendar->prettifyDate($nextPeriod->getEnd(), 'j F Y')));
 
