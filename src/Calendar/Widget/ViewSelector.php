@@ -28,19 +28,18 @@ final class ViewSelector extends Widget
 
 	public function build(Calendar $calendar): self
 	{
-		$buttonGroup = new Element('div');
-		$buttonGroup->attributes
-			->findOrCreate(Attribute\Class_::class, fn() => new Attribute\Class_())
-			->add('button-group');
+		$currentView = $calendar->view;
+
+		$this->attributes->set(new Attribute\Role('radiogroup'));
 
 		foreach ($calendar::SUPPORTED_VIEWS as $view) {
 			$button = new Element('a');
 			$button->attributes->set(new Attribute\Href((string)$calendar->url->withView($view)));
-			$button->setContent($this->prettifyViewName($view));
-			$buttonGroup->appendContent($button);
-		}
+			$button->attributes->set(new Attribute\Aria('checked', $view === $currentView ? 'true' : 'false'));
 
-		$this->appendContent($buttonGroup);
+			$button->setContent($this->prettifyViewName($view));
+			$this->appendContent($button);
+		}
 
 		return $this;
 	}
