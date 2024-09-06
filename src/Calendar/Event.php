@@ -11,7 +11,7 @@ use Brick\DateTime\ZonedDateTime;
 /**
  * @property-read string $self This is the URL to the event.
  */
-final class Event
+class Event
 {
 	public function __construct(
 		public string $self,
