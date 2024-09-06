@@ -15,7 +15,7 @@ class Event
 {
 	public function __construct(
 		public string $self,
-		public string $name,
+		public string $title,
 		public ZonedDateTime $when,
 		public Duration $duration,
 	) {
@@ -50,6 +50,6 @@ class Event
 
 	public function __toString(): string
 	{
-		return $this->name;
+		return $this->title;
 	}
 }

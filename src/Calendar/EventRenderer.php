@@ -38,7 +38,7 @@ class EventRenderer
 		$eventCell->attributes->add(new Attribute\Class_('event'));
 		$eventCell->attributes->add(new Attribute\Style(['--calendar-source-colour' => $source->colour]));
 
-		$eventCell->appendContent($event->name);
+		$eventCell->appendContent($event->title);
 
 		return $eventCell;
 	}
@@ -58,8 +58,8 @@ class EventRenderer
 			->set('--calendar-source-colour', $source->colour);
 
 		$name = new Element('h3');
-		$name->attributes->set(new Attribute\Class_('event-name'));
-		$name->setContent($event->name);
+		$name->attributes->set(new Attribute\Class_('event-title'));
+		$name->setContent($event->title);
 
 		$startsAt = $event->when;
 		$endsAt = $startsAt->plusDuration($event->duration);
