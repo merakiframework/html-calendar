@@ -8,10 +8,13 @@ use Brick\DateTime\LocalDate;
 use Brick\DateTime\LocalTime;
 use Brick\DateTime\ZonedDateTime;
 
+/**
+ * @property-read string $self This is the URL to the event.
+ */
 final class Event
 {
 	public function __construct(
-		public string $id,
+		public string $self,
 		public string $name,
 		public ZonedDateTime $when,
 		public Duration $duration,

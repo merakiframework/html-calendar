@@ -59,7 +59,6 @@ class EventRenderer
 
 		$name = new Element('h3');
 		$name->attributes->set(new Attribute\Class_('event-name'));
-		$name->attributes->set(new Attribute\Id($event->id));
 		$name->setContent($event->name);
 
 		$startsAt = $event->when;

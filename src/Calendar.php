@@ -581,7 +581,7 @@ final class Calendar extends Element
 				if (count($eventsForTimeSlot) > 0) {
 					foreach ($eventsForTimeSlot as $event) {
 						$gridRowSpan = ceil($event->duration->toMinutes() / $this->timeSlots->duration->toMinutes());
-						$id = 'source-' . $source->id . '-event-' . $event->id;
+						$id = 'source-' . $source->id . '-event-' . $event->self;
 
 						$eventCell = $this->eventRenderer->renderEventCellForDayView($event, $source, $this);
 						$eventCell->attributes->set(new Attribute('popovertargetaction', 'show'));
