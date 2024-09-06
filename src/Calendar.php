@@ -15,6 +15,7 @@ use Brick\DateTime\Period;
 use Brick\DateTime\TimeZone;
 use Brick\DateTime\ZonedDateTime;
 use Meraki\Html\Attribute;
+use Meraki\Html\Calendar\EventRenderer;
 use Meraki\Html\Element;
 use Meraki\Html\Calendar\View;
 use Meraki\Html\Calendar\Widget;
@@ -95,6 +96,8 @@ final class Calendar extends Element
 	public Calendar\Url $url;
 	public Calendar\TimeSlots $timeSlots;
 
+	private EventRenderer $eventRenderer;
+
 	public function __construct(
 		public Clock $clock,
 		public Source\Set $sources,
@@ -102,6 +105,7 @@ final class Calendar extends Element
 	) {
 		parent::__construct('div', $attributes);
 
+		$this->eventRenderer = new EventRenderer();
 		$this->registerDefaultEvents();
 
 		$this->url = Calendar\Url::fromServer();
@@ -125,6 +129,13 @@ final class Calendar extends Element
 
 		$this->update($this->now->getDate());
 		$this->handleQueryParameters();
+	}
+
+	public function useEventRenderer(EventRenderer $eventRenderer): self
+	{
+		$this->eventRenderer = $eventRenderer;
+
+		return $this;
 	}
 
 	/**
@@ -570,22 +581,25 @@ final class Calendar extends Element
 				if (count($eventsForTimeSlot) > 0) {
 					foreach ($eventsForTimeSlot as $event) {
 						$gridRowSpan = ceil($event->duration->toMinutes() / $this->timeSlots->duration->toMinutes());
+						$id = 'source-' . $source->id . '-event-' . $event->id;
 
-						$eventCell = new Element('button');
+						$eventCell = $this->eventRenderer->renderEventCellForDayView($event, $source, $this);
 						$eventCell->attributes->set(new Attribute('popovertargetaction', 'show'));
-						$eventCell->attributes->set(new Attribute('popovertarget', 'source-' . $source->id . '-event-' . $event->id));
+						$eventCell->attributes->set(new Attribute('popovertarget', $id));
+
 						$eventCell->attributes
 							->findOrCreate(Attribute\Class_::class, fn() => new Attribute\Class_())
 							->add('event');
+
 						$eventCell->attributes
 							->findOrCreate(Attribute\Style::class, fn() => new Attribute\Style())
 							->set('grid-column', $sourceIndex . ' / span 1')
-							->set('grid-row', $gridRowStart . ' / span ' . $gridRowSpan)
-							->set('--calendar-source-colour', $source->colour);
+							->set('grid-row', $gridRowStart . ' / span ' . $gridRowSpan);
 
-						$eventDetails = $this->buildEventPopover($source, $event);
+						$eventDetails = $this->eventRenderer->renderEventPopupForDayView($event, $source, $this);
+						$eventDetails->attributes->set(new Attribute('popover', ''));
+						$eventDetails->attributes->set(new Attribute\Id($id));
 
-						$eventCell->appendContent($event->name);
 						$dayColumn->appendContent($eventCell, $eventDetails);
 
 						// mark time slots as used
@@ -615,46 +629,6 @@ final class Calendar extends Element
 		}
 
 		return $dayColumn;
-	}
-
-	private function buildEventPopover(Calendar\Source $source, Calendar\Event $event): Element
-	{
-		$popover = new Element('dialog');
-		$popover->attributes->set(new Attribute('popover', ''));
-		$popover->attributes->set(new Attribute\Id('source-' . $source->id . '-event-' . $event->id));
-		$popover->attributes->findOrCreate(Attribute\Style::class, fn() => new Attribute\Style())
-			->set('--calendar-source-colour', $source->colour);
-
-		$name = new Element('h3');
-		$name->attributes->set(new Attribute\Class_('event-name'));
-		$name->attributes->set(new Attribute\Id($event->id));
-		$name->setContent($event->name);
-
-		$startsAt = $event->when;
-		$endsAt = $startsAt->plusDuration($event->duration);
-		$tz = $startsAt->getTimeZone();
-
-		$from = new Element('time');
-		$from->attributes->set(new Attribute('datetime', $startsAt->__toString()));
-		$from->setContent($startsAt->toNativeDateTimeImmutable()->format('g:i A'));
-
-		$to = new Element('time');
-		$to->attributes->set(new Attribute('datetime', $endsAt->__toString()));
-		$to->setContent($endsAt->toNativeDateTimeImmutable()->format('g:i A'));
-
-		$when = new Element('p');
-		$when->attributes->set(new Attribute\Class_('event-when'));
-		$when->setContent(
-			$from,
-			' - ',
-			$to,
-			' (' . $tz->getId() . ')'
-		);
-
-
-		$popover->appendContent($name, $when);
-
-		return $popover;
 	}
 
 	public function render(?Renderer $renderer = null): string
