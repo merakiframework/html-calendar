@@ -65,6 +65,10 @@ class EventRenderer
 		$endsAt = $startsAt->plusDuration($event->duration);
 		$tz = $startsAt->getTimeZone();
 
+		$date = new Element('time');
+		$date->attributes->set(new Attribute('datetime', $startsAt->getDate()->__toString()));
+		$date->setContent($startsAt->getDate()->toNativeDateTimeImmutable()->format('l, j F Y'));
+
 		$from = new Element('time');
 		$from->attributes->set(new Attribute('datetime', $startsAt->__toString()));
 		$from->setContent($startsAt->toNativeDateTimeImmutable()->format('g:i A'));
@@ -82,10 +86,42 @@ class EventRenderer
 			' (' . $tz->getId() . ')'
 		);
 
+		$location = new Element('p');
+		$location->attributes->set(new Attribute\Class_('event-location'));
+		$location->setContent($event->location);
 
-		$popover->appendContent($name, $when);
+		$description = new Element('p');
+		$description->attributes->set(new Attribute\Class_('event-description'));
+		$description->setContent($event->description);
+
+		$organiser = new Element('p');
+		$organiser->attributes->set(new Attribute\Class_('event-organiser'));
+		$organiser->setContent('Organised by: ' . ($event->organiser->name ?? 'Unknown'));
+
+		$viewSelf = new Element('a');
+		$viewSelf->attributes->set(new Attribute\Class_('event-view-self'));
+		$viewSelf->attributes->set(new Attribute('href', $event->self));
+		$viewSelf->attributes->set(new Attribute\Title('View event details'));
+		$viewSelf->attributes->set(Attribute\Target::blank());
+		$viewSelf->setContent('View');
+
+		$popover->appendContent($name, $date, $when, $location, $description, $organiser, $this->buildAttendeesList($event->attendees), $viewSelf);
 
 		return $popover;
+	}
+
+	private function buildAttendeesList(array $attendees): Element
+	{
+		$list = new Element('ul');
+		$list->attributes->set(new Attribute\Class_('event-attendees'));
+
+		foreach ($attendees as $attendee) {
+			$li = new Element('li');
+			$li->setContent($attendee->name);
+			$list->appendContent($li);
+		}
+
+		return $list;
 	}
 
 	public function renderEventCellForWeekView(Event $event, Source $source, Calendar $calendar): Element
