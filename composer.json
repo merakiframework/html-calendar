@@ -4,7 +4,7 @@
     "type": "library",
     "require": {
 		"php": "^8.2",
-        "meraki/html": "^0.7.1",
+        "meraki/html": "^0.7.2",
         "brick/date-time": "^0.7.0"
     },
     "require-dev": {
