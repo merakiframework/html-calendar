@@ -110,20 +110,20 @@ final class Calendar extends Element
 
 		$this->url = Calendar\Url::fromServer();
 
-		$firstDayOfWeek = $this->attributes->findOrCreate(Attribute\FirstDayOfWeek::class, fn() => new Attribute\FirstDayOfWeek(1));
+		$firstDayOfWeek = $this->attributes->findOrCreate(Attribute\FirstDayOfWeek::class, 1);
 		$this->weekStartsOn = DayOfWeek::from($firstDayOfWeek->value);
 
-		$this->timeZone = TimeZone::parse($this->attributes->findOrCreate(Attribute\TimeZone::class, fn() => new Attribute\TimeZone('UTC'))->value);
+		$this->timeZone = TimeZone::parse($this->attributes->findOrCreate(Attribute\TimeZone::class, 'UTC')->value);
 		$this->now = $this->clock->getTime()->atTimeZone($this->timeZone);
 
 		$this->timeSlots = new Calendar\TimeSlots(LocalTime::of(7, 0), LocalTime::of(19, 0), Duration::ofMinutes(15));
 
 		$this->attributes
-			->findOrCreate(Attribute\Class_::class, fn() => new Attribute\Class_())
+			->findOrCreate(Attribute\Class_::class)
 			->add('calendar');
 
 		// Select initial view
-		$viewType = $this->attributes->findOrCreate(Attribute\View::class, fn() => new Attribute\View('week'));
+		$viewType = $this->attributes->findOrCreate(Attribute\View::class, 'week');
 		$this->selectView($viewType->value);
 
 
@@ -161,10 +161,10 @@ final class Calendar extends Element
 		$now = $this->now;
 		$timeColumn = new Element('div');
 		$timeColumn->attributes
-			->findOrCreate(Attribute\Class_::class, fn() => new Attribute\Class_())
+			->findOrCreate(Attribute\Class_::class)
 			->add('time-column');
 		$timeColumn->attributes
-			->findOrCreate(Attribute\Style::class, fn() => new Attribute\Style())
+			->findOrCreate(Attribute\Style::class)
 			->set('display', 'grid')
 			->set('grid-template-columns', 'auto')
 			->set('grid-template-rows', 'subgrid')
@@ -174,10 +174,10 @@ final class Calendar extends Element
 		// build time column header cell
 		$headerCell = new Element('div');
 		$headerCell->attributes
-			->findOrCreate(Attribute\Class_::class, fn() => new Attribute\Class_())
+			->findOrCreate(Attribute\Class_::class)
 			->add('header-cell', 'time-cell');
 		$headerCell->attributes
-			->findOrCreate(Attribute\Style::class, fn() => new Attribute\Style())
+			->findOrCreate(Attribute\Style::class)
 			->set('grid-column', '1 / span 1')
 			->set('grid-row', '1 / span 1');
 		$headerCell->setContent('&nbsp;');
@@ -192,10 +192,10 @@ final class Calendar extends Element
 
 			$bodyCell = new Element('time');
 			$bodyCell->attributes
-				->findOrCreate(Attribute\Class_::class, fn() => new Attribute\Class_())
+				->findOrCreate(Attribute\Class_::class)
 				->add('body-cell', 'time-cell');
 			$bodyCell->attributes
-				->findOrCreate(Attribute\Style::class, fn() => new Attribute\Style())
+				->findOrCreate(Attribute\Style::class)
 				->set('grid-column', '1 / span 1')
 				->set('grid-row', $rowStart . ' / span 1');
 
@@ -411,10 +411,10 @@ final class Calendar extends Element
 		$kebabCaseName = $this->pascaleCaseToKebabCase($shortName);
 
 		$widget->attributes
-			->findOrCreate(Attribute\Class_::class, fn() => new Attribute\Class_())
+			->findOrCreate(Attribute\Class_::class)
 			->add($kebabCaseName);
 		$widget->attributes
-			->findOrCreate(Attribute\Style::class, fn() => new Attribute\Style())
+			->findOrCreate(Attribute\Style::class)
 			->set('grid-area', $kebabCaseName);
 
 		$this->widgets[] = $widget;
@@ -473,11 +473,11 @@ final class Calendar extends Element
 		};
 
 		$el->attributes
-			->findOrCreate(Attribute\Class_::class, fn() => new Attribute\Class_())
+			->findOrCreate(Attribute\Class_::class)
 			->add($this->view . '-view', 'view');
 
 		$el->attributes
-			->findOrCreate(Attribute\Style::class, fn() => new Attribute\Style())
+			->findOrCreate(Attribute\Style::class)
 			->set('grid-area', 'view');
 
 		// if (in_array($this->view, ['day', 'week'])) {
@@ -501,9 +501,9 @@ final class Calendar extends Element
 	private function buildWeekView(): Element
 	{
 		$view = new Element('div');
-		$attrs = $view->attributes->findOrCreate(Attribute\Style::class, fn() => new Attribute\Style());
-
-		$attrs->set('display', 'grid')
+		$view->attributes
+			->findOrCreate(Attribute\Style::class)
+			->set('display', 'grid')
 			->set('grid-template-columns', 'auto repeat(' . $this->period->getDays() . ', 1fr)')
 			->set('grid-template-rows', 'auto repeat(' . $this->timeSlots->count() . ', 1fr)');
 
@@ -524,10 +524,10 @@ final class Calendar extends Element
 		$sources = $this->sources->getSelected();
 		$dayColumn = new Element('div');
 		$dayColumn->attributes
-			->findOrCreate(Attribute\Class_::class, fn() => new Attribute\Class_())
+			->findOrCreate(Attribute\Class_::class)
 			->add('day-column');
 		$dayColumn->attributes
-			->findOrCreate(Attribute\Style::class, fn() => new Attribute\Style())
+			->findOrCreate(Attribute\Style::class)
 			->set('display', 'grid')
 			->set('grid-template-columns', 'repeat(' . count($sources) . ', 1fr)')
 			->set('grid-template-rows', 'subgrid')
@@ -544,10 +544,10 @@ final class Calendar extends Element
 
 		$dayHeader = new Element('time');
 		$dayHeader->attributes
-			->findOrCreate(Attribute\Class_::class, fn() => new Attribute\Class_())
+			->findOrCreate(Attribute\Class_::class)
 			->add('header-cell', 'day');
 		$dayHeader->attributes
-			->findOrCreate(Attribute\Style::class, fn() => new Attribute\Style())
+			->findOrCreate(Attribute\Style::class)
 			->set('grid-column', '1 / -1')
 			->set('grid-row', '1 / span 1');
 		$dayHeader->attributes->add(new Attribute('datetime', $dateToRender->__toString()));
@@ -588,11 +588,11 @@ final class Calendar extends Element
 						$eventCell->attributes->set(new Attribute('popovertarget', $id));
 
 						$eventCell->attributes
-							->findOrCreate(Attribute\Class_::class, fn() => new Attribute\Class_())
+							->findOrCreate(Attribute\Class_::class)
 							->add('event');
 
 						$eventCell->attributes
-							->findOrCreate(Attribute\Style::class, fn() => new Attribute\Style())
+							->findOrCreate(Attribute\Style::class)
 							->set('grid-column', $sourceIndex . ' / span 1')
 							->set('grid-row', $gridRowStart . ' / span ' . $gridRowSpan);
 
@@ -615,10 +615,10 @@ final class Calendar extends Element
 				if (!$isUsed) {
 					$emptyCell = new Element('time');
 					$emptyCell->attributes
-						->findOrCreate(Attribute\Class_::class, fn() => new Attribute\Class_())
+						->findOrCreate(Attribute\Class_::class)
 						->add('empty-cell');
 					$emptyCell->attributes
-						->findOrCreate(Attribute\Style::class, fn() => new Attribute\Style())
+						->findOrCreate(Attribute\Style::class)
 						->set('grid-column', $sourceIndex . ' / span 1')
 						->set('grid-row', $timeSlotStartIndexOffset + $timeSlotIndex + 1 . ' / span 1');
 					$emptyCell->attributes->add(new Attribute('datetime', $dateToRender->atTime($timeSlots[$timeSlotIndex])->__toString()));
